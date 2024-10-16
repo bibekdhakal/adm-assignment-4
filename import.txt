@@ -1,0 +1,25 @@
+// Data Import Queries
+LOAD CSV WITH HEADERS FROM "file:///User/beck/CDU/Semester3/Advanced Data Management/billing_categories.csv" AS row
+CREATE (:BillingCategory {id: row.id, title: row.title, default_price: row.default_price, monthly_charge: row.monthly_charge, status: row.status, created_by: row.created_by, updated_by: row.updated_by, created_at: row.created_at, updated_at: row.updated_at});
+
+LOAD CSV WITH HEADERS FROM "file:///User/beck/CDU/Semester3/Advanced Data Management/customer_category.csv" AS row
+CREATE (:CustomerCategory {id: row.id, category_title: row.category_title, status: row.status, created_at: row.created_at, updated_at: row.updated_at});
+
+LOAD CSV WITH HEADERS FROM "file:///User/beck/CDU/Semester3/Advanced Data Management/branches.csv" AS row
+CREATE (:Branch {id: row.id, branch_title: row.branch_title, status: row.status, created_at: row.created_at, updated_at: row.updated_at, branch_code: row.branch_code});
+
+LOAD CSV WITH HEADERS FROM "file:///User/beck/CDU/Semester3/Advanced Data Management/customers.csv" AS row
+CREATE (c:Customer {id: row.id, name: row.name, branch_id: row.branch_id, collector_id: row.collector_id});
+
+LOAD CSV WITH HEADERS FROM "file:///User/beck/CDU/Semester3/Advanced Data Management/fiscal_years.csv" AS row
+CREATE (:FiscalYear {id: row.id, year: row.year, status: row.status, created_at: row.created_at, updated_at: row.updated_at});
+
+LOAD CSV WITH HEADERS FROM "file:///User/beck/CDU/Semester3/Advanced Data Management/users.csv" AS row
+CREATE (u:User {id: row.id, name: row.name, branch_id: row.branch_id});
+
+LOAD CSV WITH HEADERS FROM "file:///User/beck/CDU/Semester3/Advanced Data Management/billing.csv" AS row
+CREATE (b:Billing {id: row.id, user_id: row.user_id, total_amount: row.total_amount, fiscal_year_id: row.fiscal_year_id});
+
+LOAD CSV WITH HEADERS FROM 'file:///Users/beck/CDU/Semester3/Advanced%20Data%20Management/Assignment%202/billing_details.csv' AS row
+CREATE (cc:BillingDetail)
+SET cc += row;

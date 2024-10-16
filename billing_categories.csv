@@ -1,0 +1,11 @@
+id,title,default_price,monthly_charge,status,created_by,updated_by,created_at,updated_at
+1,Monthly Charge,0.0,yes,active,1,,2021-08-11 02:48:36,2021-08-11 02:48:36
+2,Due,0.0,no,active,1,,2021-08-11 02:49:00,2021-08-11 02:49:00
+3,Advance,0.0,no,active,1,,2021-08-11 07:26:42,2021-08-11 07:26:42
+4,Registration Fee,200.0,no,active,1,1,2021-08-11 08:31:31,2021-09-02 08:59:46
+5,Festival Charges,450.0,no,active,1,1,2021-08-11 08:31:47,2021-09-02 09:00:54
+6,Card,50.0,no,active,1,1,2021-08-15 08:14:03,2022-01-25 07:24:19
+7,Others,100.0,no,active,1,,2021-09-02 08:58:47,2021-09-02 08:58:47
+8,Additional Service,1.0,no,active,1,,2022-08-22 09:32:29,2022-08-22 09:32:29
+9,Extra Solid Waste Management Service,100.0,no,active,1,,2022-09-12 03:38:00,2022-09-12 03:38:00
+10,Waste Transportation By Truck,10.0,no,active,1,,2022-11-04 05:53:52,2022-11-04 05:53:52

@@ -1,0 +1,84 @@
+
+
+// Relationship Creation Queries
+MATCH (c:Customer), (cc:CustomerCategory) WHERE c.customer_category_id = cc.id
+CREATE (c)-[:BELONGS_TO]->(cc);
+
+MATCH (u:User), (b:Branch) WHERE u.branch_id = b.id
+CREATE (u)-[:COLLECTOR_BELONGS_TO_BRANCH]->(b);
+
+MATCH (b:Billing), (bd:BillingDetail) WHERE b.id = bd.billing_id
+CREATE (b)-[:HAS_DETAIL]->(bd);
+
+MATCH (b:Billing), (f:FiscalYear) WHERE b.fiscal_year_id = f.id
+CREATE (b)-[:BELONGS_TO_FISCAL_YEAR]->(f);
+
+MATCH (bd:BillingDetail), (bc:BillingCategory) WHERE bd.billing_category_id = bc.id
+CREATE (bd)-[:BELONGS_TO_CATEGORY]->(bc);
+
+MATCH (c:Customer), (b:Branch) WHERE c.branch_id = b.id
+CREATE (c)-[:BELONGS_TO_BRANCH]->(b);
+
+MATCH (u:User), (c:Customer) WHERE u.id = c.collector_id
+CREATE (u)-[:COLLECTOR_HAS_CUSTOMER]->(c);
+
+MATCH (u:User), (b:Billing) WHERE u.id = b.user_id
+CREATE (u)-[:COLLECTOR_GENERATE_BILL]->(b);
+
+// Index Creation Queries
+CREATE INDEX FOR (c:Customer) ON (c.id);
+CREATE INDEX FOR (u:User) ON (u.id);
+CREATE INDEX FOR (b:Billing) ON (b.id);
+CREATE INDEX FOR (bd:BillingDetail) ON (bd.id);
+CREATE INDEX FOR (f:FiscalYear) ON (f.id);
+CREATE INDEX FOR (bc:BillingCategory) ON (bc.id);
+CREATE INDEX FOR (cc:CustomerCategory) ON (cc.id);
+CREATE INDEX FOR (br:Branch) ON (br.id);
+
+// Graph Queries
+MATCH (c:Customer)-[:BELONGS_TO_BRANCH]->(b:Branch)
+MATCH (c)-[:HAS_BILL]->(bill:Billing)
+WITH b, c, SUM(toFloat(bill.total_amount)) AS TotalBilling
+RETURN b.branch_title AS BranchName, 
+       COLLECT(c.name) AS CustomerNames, 
+       TotalBilling
+ORDER BY TotalBilling DESC;
+
+MATCH (b:Branch)<-[:BELONGS_TO_BRANCH]-(c:Customer)-[:HAS_BILL]->(bill:Billing)
+WITH b, c, SUM(toFloat(bill.total_amount)) AS TotalBilling
+ORDER BY b.id, TotalBilling DESC
+WITH b, 
+     COLLECT(c.name) AS Customers, 
+     COLLECT(TotalBilling) AS Billings
+RETURN b.branch_title AS BranchName, 
+       [i IN RANGE(0, 2) | {name: Customers[i], amount: Billings[i]}] AS TopCustomers;
+
+MATCH (u:User)-[:COLLECTOR_HAS_CUSTOMER]->(c:Customer)
+RETURN u.name AS CollectorName, COUNT(c) AS TotalCustomers
+ORDER BY TotalCustomers DESC;
+
+MATCH (bd:BillingDetail)-[:BELONGS_TO_CATEGORY]->(bc:BillingCategory)
+RETURN bc.title AS BillingCategory, SUM(toFloat(bd.billing_amount)) AS TotalBillingAmount
+ORDER BY TotalBillingAmount DESC;
+
+// Centrality Algorithm Queries
+CALL gds.graph.project(
+  "billingGraph",
+  ["Billing", "BillingCategory", "BillingDetail", "Branch", "Customer", "CustomerCategory", "FiscalYear", "User"],
+  ["BELONGS_TO", "BELONGS_TO_BRANCH", "BELONGS_TO_CATEGORY", "BELONGS_TO_FISCAL_YEAR", "COLLECTOR_BELONGS_TO_BRANCH", "COLLECTOR_GENERATE_BILL", "COLLECTOR_HAS_CUSTOMER", "HAS_BILL", "HAS_DETAIL"]
+);
+
+CALL gds.degree.stream("billingGraph")
+YIELD nodeId, score
+RETURN 
+  CASE 
+    WHEN gds.util.asNode(nodeId).name IS NOT NULL THEN gds.util.asNode(nodeId).name
+    WHEN gds.util.asNode(nodeId).branch_title IS NOT NULL THEN gds.util.asNode(nodeId).branch_title
+    WHEN gds.util.asNode(nodeId).category_title IS NOT NULL THEN gds.util.asNode(nodeId).category_title
+    WHEN gds.util.asNode(nodeId).title IS NOT NULL THEN gds.util.asNode(nodeId).title
+    WHEN gds.util.asNode(nodeId).fiscal_year IS NOT NULL THEN gds.util.asNode(nodeId).fiscal_year
+    WHEN gds.util.asNode(nodeId).bill_no IS NOT NULL THEN gds.util.asNode(nodeId).bill_no
+    WHEN gds.util.asNode(nodeId).billing_id IS NOT NULL THEN gds.util.asNode(nodeId).billing_id
+    ELSE "Unknown Node"
+  END AS nodeName, score
+ORDER BY score DESC;

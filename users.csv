@@ -1,0 +1,4 @@
+id,name,email,email_verified_at,password,branch_id,user_type,status,reset_token,token_expired_at,remember_token,created_at,updated_at,password_reset_at,logged_in_at
+1,SUPER ADMIN,super@admin.com,,$2a$12$sS3F4KnAaYrp55HaVo13IeY40lQimFQhnMmjYcHwh2Wis22U1zzS6,6,super admin,active,,,,,,,
+2,Sabitra Acharya,sabitra@gmail.com,,$2a$12$sS3F4KnAaYrp55HaVo13IeY40lQimFQhnMmjYcHwh2Wis22U1zzS6,1,collector,active,,,,,2022-09-01 12:26:17,,2022-09-01 06:11:17
+3,Laxmi Timalsina,laxmi.pg2030@gmail.com,,$2a$12$sS3F4KnAaYrp55HaVo13IeY40lQimFQhnMmjYcHwh2Wis22U1zzS6,1,collector,active,,,,,2022-09-12 09:13:47,,2022-09-12 02:58:47
